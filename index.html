@@ -43,8 +43,14 @@
         <!-- 路由匹配到的组件将渲染在这里 作为一个主容器-->
         <router-view></router-view>
 
-        <!--直接放一个命名视图，测试一下-->
-        <router-view name="password2"></router-view>
+        <!--弹窗的博文详细-->
+        <div id="div_Mod_" class="layer_div_c" style="top: 149px; left:109.5px; width: 300px; height: 200px; z-index: 10010; display: none;">
+            <span id="span_title_31702" class="layer_title" style="cursor: move;">外面的博文<a href="javascript:void(0)" id="A3">X</a></span>
+            <p>
+                <router-view name="acticle4"></router-view>
+            </p>
+        </div>
+       
     </div>
 
     <script type="text/javascript">
@@ -66,16 +72,31 @@ const Index = {
 //博文列表
 const Blog = { 
         template: `<div style="float:left;width:600px;height:500px;border: 1px #ddd solid;">
-            博文列表<br>
-            <router-link to="/blog/1234">点我看详细</router-link>  <br> 
-            <router-link to="/blog/1235">博文二</router-link>  <br> 
-            <router-link to="/blog/1236">博文三</router-link>  <br> 
-        </div>`
+                博文列表<br>
+                <router-link to="/blog/1234">点我看详细</router-link>  <br> 
+                <router-link to="/blog/1235">博文二</router-link>  <br> 
+                <router-link to="/blog/1236">博文三</router-link>  <br> 
+                <router-link to="/blogs/888">弹窗博文五</router-link>  <br> 
+
+                <!--弹窗的博文详细-->
+                <div id="div_Mod_222" v-if="blogId" class="layer_div_c" style="top: 149px; left:109.5px; width: 420px; height: 360px; z-index: 10010; display: block;">
+                    <span id="span_title_31702" class="layer_title" style="cursor: move;">里面的博文<a href="javascript:void(0)" id="A3">X</a></span>
+                    <p>
+                        <router-view name="acticle"></router-view>
+                    </p>
+                </div>
+            </div>`,
+        computed:{
+            blogId () {
+                // 我们很快就会看到 `params` 是什么
+                return this.$route.params.id
+            }
+        }    
     }
 
 //博文详细
 const Acticle = { 
-    template:  `<div style="float:left;width:600px;height:500px;border: 1px #ddd solid;">
+    template:  `<div style="float:left;width:400px;height:300px;border: 1px #ddd solid;">
             博文详细 <br><br>
             博文ID：{{blogId}}<br><br>
             博文内容：{{html}}<br>
@@ -204,6 +225,15 @@ const routes = [
     //博文详细
     // 动态路径参数 以冒号开头
     { path: '/blog/:id', component: Acticle },
+
+    // 弹窗的博文
+    { path: '/blogs',component: Blog,
+        children:[{
+            path: '/blogs/:id',
+            components:{acticle:Acticle}
+        }]
+    
+    },
 
     //用户中心，子路由
     { path: '/user', component: User,
