@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>根据官网路由的文档整理一下</title>
+    <script type="text/javascript" src="vue.js"></script>
+    <script type="text/javascript" src="vue-router.js"></script>
+    
+    <link type="text/css" rel="stylesheet" media="screen" href="css/mangoGlobal.css">
+    <link type="text/css" rel="stylesheet" media="screen" href="css/mis-style-p.css">
+    <link type="text/css" rel="stylesheet" media="screen" href="css/MisStyle_v2.css">
+    <link type="text/css" rel="stylesheet" media="screen" href="css/css2.css">
+
+    <meta charset="utf-8" />
+
+    <script  type="text/javascript">
+
+    </script>
+
+</head>
+
+<body >
+   
+    <div id="app">
+        路由外部数据绑定测试：{{userId}}
+        <h1>Hello App!</h1>
+        路由参数：{{params}}
+        <p>
+        <!-- 使用 router-link 组件来导航. -->
+        <!-- 通过传入 `to` 属性指定链接. -->
+        <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+        <router-link to="/foo">Go to Foo</router-link> <br><br>
+        <router-link to="/bar">Go to Bar</router-link><br><br>
+        <router-link to="/user/123">Go to user</router-link><br><br>
+        &nbsp;&nbsp;&nbsp;<router-link to="/user/123/profile">Go to profile</router-link><br><br>
+        &nbsp;&nbsp;&nbsp;<router-link to="/user/123/posts">Go to posts</router-link><br><br>
+        
+        </p>
+        <!-- 路由出口 -->
+        <!-- 路由匹配到的组件将渲染在这里 -->
+        <router-view></router-view>
+    </div>
+
+    <script type="text/javascript">
+
+// 0. 如果使用模块化机制编程，导入Vue和VueRouter，要调用 Vue.use(VueRouter)
+
+// 1. 定义 (路由) 组件。
+// 可以从其他文件 import 进来
+const Foo = { 
+    template: '<div>foo{{a}}</div>',
+    data:function(){
+        return {
+            a:"aaaa"
+        }
+    }
+}
+const Bar = { template: '<div>bar</div>' }
+
+//嵌套路由
+const User = { 
+    template: '<div>user内部  {{ $route.params.id }} 内部路由：<router-view></router-view></div>',
+    watch: {
+        //监听路由变化
+        '$route' (to, from) {
+        // 对路由变化作出响应...
+        }
+    }
+}
+
+//被嵌套的两个路由
+   const UserProfile = {template: '<div>UserProfile</div>'}
+   const UserPosts = {template: '<div>UserPosts</div>'}
+
+
+// 2. 定义路由
+// 每个路由应该映射一个组件。 其中"component" 可以是
+// 通过 Vue.extend() 创建的组件构造器，
+// 或者，只是一个组件配置对象。
+// 我们晚点再讨论嵌套路由。
+const routes = [
+  { path: '/foo', component: Foo },
+  
+  { path: '/bar', component: Bar },
+  // 动态路径参数 以冒号开头
+  { path: '/user/:id', component: User,
+        children: [
+                {
+                // 当 /user/:id/profile 匹配成功，
+                // UserProfile 会被渲染在 User 的 <router-view> 中
+                path: 'profile',
+                component: UserProfile
+                },
+                {
+                // 当 /user/:id/posts 匹配成功
+                // UserPosts 会被渲染在 User 的 <router-view> 中
+                path: 'posts',
+                component: UserPosts
+                }
+            ]
+   }
+  
+]
+
+// 3. 创建 router 实例，然后传 `routes` 配置
+// 你还可以传别的配置参数, 不过先这么简单着吧。
+const router = new VueRouter({
+  routes // (缩写) 相当于 routes: routes
+})
+
+// 4. 创建和挂载根实例。
+// 记得要通过 router 配置参数注入路由，
+// 从而让整个应用都有路由功能
+//const app = new Vue({
+ // router
+//}).$mount('#app')
+
+// 现在，应用已经启动了！
+
+        var form = new Vue({
+            router,
+            el: '#app',
+            data: {
+                json:'json',
+                params:this.$route,
+                formControl:{
+                    c1:{
+                        //辅助
+                        controlId: '150', //ColumnID
+                        controlType: 155, //text ControlTypeID
+                        colName: '姓名', //ColName
+                        isClear: false, //isClear  连续添加时是否清空
+                    
+                        //通用
+                        
+                        disabled: false,  //不可用
+                        required: true, //必填 CheckTypeID
+                        pattern: '', //用正则做验证。CheckTypeID CheckUserDefined
+                        tabIndex:0, // tab 键顺序
+                        class:'cssTxt input_t1',
+
+                        //多行文本
+                        rows:5,  //行数
+                        cols:100, //列数
+
+                        //文本框类
+                        name:'',
+                        value: '', //DefaultValue
+                        title: '', //ColTitle ColHelp
+                        placeholder: '请输入姓名', //CheckTip
+                        readonly: false, //只读 ControlState
+                        size: 10, //controlExtend.size
+                        maxlength: 20, //controlExtend.maxlen
+                        autocomplete: 'on', //off
+                        min: null, //滑块的最小值
+                        max: null, //滑块的最大值
+                        step: null, //滑块的步长
+                        multiple: false, //是否可以有多个值，用于上传文件
+                        
+                        listKey:'browsers', //备选文字
+                        //list: ['Internet Explorer', 'Firefox'],
+                    
+                    
+                    
+                    },
+                    c2:{
+                        //controlId: 'colName', //ColumnID
+                        controlType: 116//,  
+                        //colName: '对外名称', //ColName
+                        // isClear: false, //isClear  连续添加时是否清空
+                    
+                        // class:'cssTxt input_t1',
+                        // value: '控件',  
+                        //  placeholder: '请填写标题',  
+                        //  size: 30,  
+                        // maxlength: 50
+                    }
+
+                }
+            },
+            created: function () {
+       
+            },
+            watch: {
+                '$route' (to, from) {
+                // 对路由变化作出响应...
+                   //alert(to);
+             
+
+                }
+            },
+            beforeRouteUpdate (to, from, next) {
+                // react to route changes...
+                // don't forget to call next()
+                alert(from);
+            },
+            computed:{
+                username () {
+                    // 我们很快就会看到 `params` 是什么
+                    return this.$route.params.username
+                },
+                userId () {
+                    // 我们很快就会看到 `params` 是什么
+                    return this.$route.params.id
+                }
+            
+                 
+            },
+            methods: {
+                goBack () {
+                    window.history.length > 1
+                        ? this.$router.go(-1)
+                        : this.$router.push('/')
+                }
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

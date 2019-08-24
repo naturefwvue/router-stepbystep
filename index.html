@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>用博客实例学习Vue的路由</title>
+    <script type="text/javascript" src="vue.js"></script>
+    <script type="text/javascript" src="vue-router.js"></script>
+    
+    <link type="text/css" rel="stylesheet" media="screen" href="css/mangoGlobal.css">
+    <link type="text/css" rel="stylesheet" media="screen" href="css/mis-style-p.css">
+    <link type="text/css" rel="stylesheet" media="screen" href="css/MisStyle_v2.css">
+    <link type="text/css" rel="stylesheet" media="screen" href="css/css2.css">
+
+    <meta charset="utf-8" />
+
+    <script  type="text/javascript">
+
+    </script>
+
+</head>
+
+<body >
+   
+    <div id="app">
+        
+        <h1>我的博客，仅用于演示Vue的路由</h1>
+        <div >
+            <!--导航-->
+            <!-- 使用 router-link 组件来导航. -->
+            <!-- 通过传入 `to` 属性指定链接. -->
+            <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+            <router-link to="/">首页</router-link>  &nbsp; 
+            <router-link to="/blog">博客</router-link>  &nbsp; 
+            <router-link to="/user">个人中心</router-link>  &nbsp; 
+            <router-link to="/userTab">个人中心(tab)</router-link>  &nbsp; 
+            <router-link to="/pwd">修改密码</router-link>  &nbsp; 
+            <!--这么写外链是不对滴-->
+            <router-link to="https://www.zhihu.com/people/naturefw/activities">知乎</router-link>  &nbsp; 
+        </div>
+         
+        <!-- 路由出口 -->
+        <!-- 路由匹配到的组件将渲染在这里 作为一个主容器-->
+        <router-view></router-view>
+
+        <!--直接放一个命名视图，测试一下-->
+        <router-view name="password2"></router-view>
+    </div>
+
+    <script type="text/javascript">
+
+// 0. 如果使用模块化机制编程，导入Vue和VueRouter，要调用 Vue.use(VueRouter)
+
+// 1. 定义 (路由) 组件。
+// 可以从其他文件 import 进来
+//首页
+const Index = { 
+    template: '<div>首页，欢迎欢迎热烈欢迎 ———— {{a}}</div>',
+    data:function(){
+        return {
+            a:"首页的data"
+        }
+    }
+}
+
+//博文列表
+const Blog = { 
+        template: `<div style="float:left;width:600px;height:500px;border: 1px #ddd solid;">
+            博文列表<br>
+            <router-link to="/blog/1234">点我看详细</router-link>  <br> 
+            <router-link to="/blog/1235">博文二</router-link>  <br> 
+            <router-link to="/blog/1236">博文三</router-link>  <br> 
+        </div>`
+    }
+
+//博文详细
+const Acticle = { 
+    template:  `<div style="float:left;width:600px;height:500px;border: 1px #ddd solid;">
+            博文详细 <br><br>
+            博文ID：{{blogId}}<br><br>
+            博文内容：{{html}}<br>
+        </div>` ,
+    data:function(){
+        var re = {html:'加载中...'};
+
+        var id = this.$route.params.id;
+        //根据id获取数据
+        setTimeout(function(){
+            re.html = "假设获取到了数据" + id;
+        },1000);
+       
+        return re;
+    },
+    computed:{
+            blogId () {
+                // 我们很快就会看到 `params` 是什么
+                return this.$route.params.id
+            }
+        }    
+    }
+
+//嵌套路由 个人中心
+const User = { 
+    template: `<div>
+        <div style="float:left;width:150px;height:500px;border: 1px #ddd solid;">
+            <router-link to="/user/password">修改密码</router-link>  <br><br>
+            <router-link to="/user/blog">我的博文</router-link>  <br><br>
+            <router-link to="/user/discuss">查看讨论</router-link>  <br><br>
+        </div>
+        <div style="float:left;width:450px;height:500px;border: 1px #ddd solid;">
+            <router-view></router-view>
+        
+        </div>
+    </div>
+    `,
+    data:function(){
+        return {
+            cur:1
+        };
+    },
+    computed:{
+        path () {
+            // 我们很快就会看到 `params` 是什么
+            return this.$route.path
+        }
+    },    
+    
+    watch: {
+        //监听路由变化
+        '$route' (to, from) {
+        // 对路由变化作出响应...
+        }
+    }
+}
+
+    //被嵌套的三个路由
+   const UserPassword = {template: '<div>修改密码:<input type="text" class="cssTxt input_t1"/></div>'}
+   const UserBlog = {template: '<div>查看自己的博文</div>'}
+   const UserDiscuss = {template: '<div>查看讨论</div>'}
+
+//并列路由，命名视图 个人中心（tab标签）
+const UserTab = { 
+    template: `<div>
+        <div style="float:left;width:150px;height:500px;border: 1px #ddd solid;">
+            <router-link to="/userTab/password">修改密码</router-link>   <br><br>
+            <router-link to="/userTab/blog">我的文章</router-link>  <br><br>
+            <router-link to="/userTab/discuss">查看讨论</router-link>  <br><br>
+        </div>
+        <div style="float:left;width:450px;height:500px;border: 1px #ddd solid;">
+        <!--tab标签-->
+        <ul id="ulTab" class="tabs left">
+            <li id="tab302"  :class="{'selectTag':path==='/usertab/password'}">
+                <router-link to="/userTab/password">修改密码&nbsp;<em class="arrup" onclick="">x</em></router-link> 
+            </li>
+            <li id="tab316"  :class="{'selectTag':path==='/usertab/blog'}">
+                <router-link to="/userTab/blog">我的博文&nbsp;<em class="arrup" onclick="">x</em></router-link> 
+            </li>
+            <li id="tab317"  :class="{'selectTag':path==='/usertab/discuss'}">
+                <router-link to="/userTab/discuss">查看讨论&nbsp;<em class="arrup" onclick="">x</em></router-link> 
+            </li>
+        </ul>
+        <!--命名视图-->
+        
+            <router-view v-show="path==='/usertab/password'" name="password"></router-view>
+            <router-view v-show="path==='/usertab/blog'"  name="blog"></router-view>
+            <router-view v-show="path==='/usertab/discuss'"  name="discuss"></router-view>
+        
+        </div>
+    </div>
+    `,
+    computed:{
+        path () {
+            // 我们很快就会看到 `params` 是什么
+            return this.$route.path.toLowerCase()
+        }
+    }, 
+    watch: {
+        //监听路由变化
+        '$route' (to, from) {
+        // 对路由变化作出响应...
+        }
+    }
+}
+
+    //tab的三个路由
+    //const UserPassword2 = {template: '<div>修改密码2</div>'}
+    //const UserBlog2 = {template: '<div>查看自己的博文2</div>'}
+    //const UserDiscuss2 = {template: '<div>查看讨论2</div>'}
+
+
+
+// 2. 定义路由
+// 每个路由应该映射一个组件。 其中"component" 可以是
+// 通过 Vue.extend() 创建的组件构造器，
+// 或者，只是一个组件配置对象。
+// 我们晚点再讨论嵌套路由。
+const routes = [
+    //首页
+    { path: '/', component: Index },
+
+    //博文列表
+    { path: '/blog', component: Blog },
+
+    //博文详细
+    // 动态路径参数 以冒号开头
+    { path: '/blog/:id', component: Acticle },
+
+    //用户中心，子路由
+    { path: '/user', component: User,
+        children: [
+            {
+                // 当 /user/:id/profile 匹配成功，
+                // UserProfile 会被渲染在 User 的 <router-view> 中
+                path: 'Password',
+                component: UserPassword
+            },
+            {
+                // 当 /user/:id/posts 匹配成功
+                // UserPosts 会被渲染在 User 的 <router-view> 中
+                path: 'blog',
+                component: UserBlog
+            },
+            {
+                // 当 /user/:id/posts 匹配成功
+                // UserPosts 会被渲染在 User 的 <router-view> 中
+                path: 'discuss',
+                component: UserDiscuss
+            }
+        ]
+    },
+
+    //用户中心，tab版
+    { path: '/usertab', component: UserTab  ,
+        children:[
+            {
+                path: 'password', 
+                components: {
+                    password:UserPassword,
+                    blog:UserBlog,
+                    discuss:UserDiscuss
+                }
+            },
+            {
+                path: 'blog', 
+                components: {
+                    password:UserPassword,
+                    blog:UserBlog,
+                    discuss:UserDiscuss
+                }
+            },
+            {
+                path: 'discuss', 
+                components: {
+                    password:UserPassword,
+                    blog:UserBlog,
+                    discuss:UserDiscuss
+                }
+            }
+        ]
+    }  ,
+
+
+    {
+        path:'/pwd',
+        components:{
+            default:UserPassword
+        }
+    }
+ 
+
+]
+
+// 3. 创建 router 实例，然后传 `routes` 配置
+// 你还可以传别的配置参数, 不过先这么简单着吧。
+const router = new VueRouter({
+  routes // (缩写) 相当于 routes: routes
+})
+
+// 4. 创建和挂载根实例。
+// 记得要通过 router 配置参数注入路由，
+// 从而让整个应用都有路由功能
+//const app = new Vue({
+ // router
+//}).$mount('#app')
+
+// 现在，应用已经启动了！
+
+        var form = new Vue({
+            router,// (缩写)
+            el: '#app',
+            data: {
+                json:'json',
+                params:this.$route
+            },
+            created: function () {
+       
+            },
+            watch: {
+                '$route' (to, from) {
+                // 对路由变化作出响应...
+                   //alert(to);
+             
+
+                }
+            },
+            beforeRouteUpdate (to, from, next) {
+                // react to route changes...
+                // don't forget to call next()
+                alert(from);
+            },
+            computed:{
+                username () {
+                    // 我们很快就会看到 `params` 是什么
+                    return this.$route.params.username
+                },
+                userId () {
+                    // 我们很快就会看到 `params` 是什么
+                    return this.$route.params.id
+                }
+            
+                 
+            },
+            methods: {
+                goBack () {
+                    window.history.length > 1
+                        ? this.$router.go(-1)
+                        : this.$router.push('/')
+                }
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
